@@ -39,7 +39,7 @@ output: html_document
     Answer: 
 
     ```{r}
-
+hhh
     ```
 
 3.  Map a continuous variable to `color`, `size`, and `shape`. How do
