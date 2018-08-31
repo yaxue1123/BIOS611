@@ -18,7 +18,7 @@ output: html_document
 
 1.  What's gone wrong with this code? Why are the points not blue?
 
-    ```{r}
+    ```{r warning = FALSE}
     library(ggplot2)
     ggplot(data = mpg) + 
       geom_point(mapping = aes(x = displ, y = hwy, color = "blue"))
@@ -31,6 +31,8 @@ output: html_document
     ggplot(data = mpg) + 
       geom_point(mapping = aes(x = displ, y = hwy), color = "blue")
     ```
+    * Color here doesn't convey information of a variable but only changes the appearance of the plot, so it should be outside the mapping argument.
+    
 
 2.  Which variables in `mpg` are categorical? Which variables are continuous? 
     (Hint: type `?mpg` to read the documentation for the dataset). How
@@ -39,8 +41,13 @@ output: html_document
     Answer: 
 
     ```{r}
-    12345
+    mpg
     ```
+    
+    * Categorical: manufacturer, model, trans, drv, fl, class
+    
+    * Continuous: displ, year, cyl, cty, hwy 
+   
 
 3.  Map a continuous variable to `color`, `size`, and `shape`. How do
     these aesthetics behave differently for categorical vs. continuous
@@ -49,16 +56,31 @@ output: html_document
     Answer: 
 
     ```{r}
+    ggplot( data = mpg) + geom_point(mapping = aes(x = displ, y = hwy, color = cty))
 
     ```
+    
+    * When mapped to color, aesthetics choose a scale of colors instead of discrete colors for continuous variables' levels. In this case, from darker blue (lower hwy) to lighter blue (higher hwy).
+    
+    
+    ```{r}
+    ggplot( data = mpg) + geom_point(mapping = aes(x = displ, y = hwy, size = cty))
 
+    ```
+    * When mapped to size, aesthetics assign different sizes of dots according to the value to cty. But the legend only shows representative ones instead of a continuous legend as mapping to color.
+    ```{r}
+
+    ```
+    * Got an error message that "A continues variable cannot be mapped to shape". I think it is because that there are only limited kinds of shapes while a continuous variable could be unlimited.
+    
 4.  What happens if you map the same variable to multiple aesthetics? 
 
     Answer: 
 
     ```{r}
-
+    ggplot( data = mpg) + geom_point(mapping = aes(x = displ, y = hwy, color = displ, size = hwy))
     ```
+    In the plot above, hwy is mapped to y axis as well as size, and displ is mapped to both x axis and color, which is unnecessary because we have already had idea of hwy and displ values through x-y coordinate thus do not need extra color or size information to facilitate understanding. 
 
 5.  What does the `stroke` aesthetic do? What shapes does it work with?
     (Hint: use `?geom_point`)
@@ -66,18 +88,19 @@ output: html_document
     Answer: 
 
     ```{r}
-
+    ggplot(data = mpg) + geom_point(mapping = aes(x = displ, y = hwy), shape = 22, stroke = 3)
     ```
-
+    `stroke' can change the border of shapes.The bigger the stroke is, the wider the border is.
+    
 6.  What happens if you map an aesthetic to something other than a variable 
     name, like `aes(colour = displ < 5)`?  
 
     Answer: 
 
     ```{r}
-
+    ggplot(data = mpg) + geom_point(mapping = aes(x = displ, y = hwy, color = displ < 5))
     ```
-
+    The color will follow true or false of the condition when you map the aesthetic.
 
 # Exercise 2
 
@@ -92,8 +115,11 @@ output: html_document
     Answer: 
 
     ```{r}
-
+    ggplot(data = mpg) + 
+      geom_point(mapping = aes(x = displ, y = hwy)) + 
+      facet_grid(drv ~ cyl)
     ```
+    The empty cells mean that there are no values fitting such condition.For example, no car in the mpg database has 4 cylindars as well as being 4-wheel-drive. The relation between two plots is that there is no dot on (4,5), (r,4) and (r,5) in plot 1, which is the same in plot 2.
 
 2.  What plots does the following code make? What does `.` do?
 
@@ -112,7 +138,12 @@ output: html_document
     ```{r}
 
     ```
-
+    * The first code facets by values of drv (whether the car is front-wheel-drive, rear-wheel-drive or 4-wheel-drive);
+    
+    * The second code facets by values of displ (whether the car has 4,5,6,8 engine displacements);
+    
+    * The simple `.` ignores that dimension of facet.
+    
 3.  Take the first faceted plot in this section:
 
     ```{r, eval = FALSE}
@@ -130,7 +161,10 @@ output: html_document
     ```{r}
 
     ```
-
+    * Advantage: Easier and clearer to tell categories. Less data points in each plot. Better for color-blind people.Easier to tell similarity and difference of patterns between different categories.
+    * Disadvantage: Could occupy too much space if there is many categories, especially when empty cells are at a large portion, this way is space-wasting. Harder to compare individual points' location and the relationship.
+    * If I have a larger dataset, I would prefer using facet plot first since there would be less overlapping. But I will also use color, size or alpha to facilitate the visualiztion as an addition if there aren't too many categories.
+    
 # Exercise 3
 
 1.  What geom would you use to draw a line chart? A boxplot? 
@@ -141,7 +175,11 @@ output: html_document
     ```{r}
 
     ```
-
+    * line chart: `geom_line()`
+    * boxplot: `geom_boxplot()`
+    * histogram: `geom_hist()`
+    * area chart: `geom_area()`
+    
 2.  Run this code in your head and predict what the output will look like.
     Then, run the code in R and check your predictions.
     
@@ -154,8 +192,12 @@ output: html_document
     Answer: 
 
     ```{r}
-
+    ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) + 
+      geom_point() + 
+      geom_smooth()
     ```
+    Same as what I thought...
+    
 
 3.  What does `show.legend = FALSE` do?  What happens if you remove it?  
     Why do you think I used it earlier in the chapter?
