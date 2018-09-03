@@ -432,6 +432,6 @@ output: html_document
     ```
     * The plot tells us `hwy` and `cty` has a positive linear relationship that hwy increases about two times in amount as cty increases.
     
-    * `coord_fixed` forces a fixed scale that ensures one unit on the x-axis is the same length as one unit on the y-axis. In this case, `coord_fixed` ensures the line produced by 'geom_abline' is at a 45 degree angle.
+    * `coord_fixed()` forces a fixed scale that ensures one unit on the x-axis is the same length as one unit on the y-axis. In this case, `coord_fixed()` ensures the line produced by 'geom_abline' is at a 45 degree angle.
     
-    * `geom_abline` draws a line defined by slope and y-axis intercept. In this case, it draws a line at a 45 degree angle for users' better preception.
+    * `geom_abline()` draws a line defined by slope and y-axis intercept. In this case, it draws a line at a 45 degree angle for users' better preception.
