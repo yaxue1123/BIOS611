@@ -61,7 +61,7 @@ output: html_document
     ```
     
     * When mapped to color, aesthetics choose a scale of colors instead of discrete colors for continuous variables' levels. In this case, from darker blue (lower hwy) to lighter blue (higher hwy).
-    
+
     
     ```{r}
     ggplot( data = mpg) + geom_point(mapping = aes(x = displ, y = hwy, size = cty))
@@ -80,6 +80,7 @@ output: html_document
     ```{r}
     ggplot( data = mpg) + geom_point(mapping = aes(x = displ, y = hwy, color = displ, size = hwy))
     ```
+    
     In the plot above, hwy is mapped to y axis as well as size, and displ is mapped to both x axis and color, which is unnecessary because we have already had idea of hwy and displ values through x-y coordinate thus do not need extra color or size information to facilitate understanding. 
 
 5.  What does the `stroke` aesthetic do? What shapes does it work with?
@@ -90,6 +91,7 @@ output: html_document
     ```{r}
     ggplot(data = mpg) + geom_point(mapping = aes(x = displ, y = hwy), shape = 22, stroke = 3)
     ```
+    
     `stroke' can change the border of shapes.The bigger the stroke is, the wider the border is.
     
 6.  What happens if you map an aesthetic to something other than a variable 
@@ -100,6 +102,7 @@ output: html_document
     ```{r}
     ggplot(data = mpg) + geom_point(mapping = aes(x = displ, y = hwy, color = displ < 5))
     ```
+   
     The color will follow true or false of the condition when you map the aesthetic.
 
 # Exercise 2
@@ -119,6 +122,7 @@ output: html_document
       geom_point(mapping = aes(x = displ, y = hwy)) + 
       facet_grid(drv ~ cyl)
     ```
+    
     The empty cells mean that there are no values fitting such condition.For example, no car in the mpg database has 4 cylindars as well as being 4-wheel-drive. The relation between two plots is that there is no dot on (4,5), (r,4) and (r,5) in plot 1, which is the same in plot 2.
 
 2.  What plots does the following code make? What does `.` do?
@@ -196,6 +200,7 @@ output: html_document
       geom_point() + 
       geom_smooth()
     ```
+    
     Same as what I thought...
     
 
@@ -208,6 +213,8 @@ output: html_document
 
     ```
 
+    `show.legend = FALSE` makes the plot not show legend. Without this, there would be a legend. In the earlier plots in the chapter, there are three plots and the first two don't have legend, so hidding the legend of the third plot could make them consistent. Also, the goal of the third plot is to show the difference between grouping and not grouping thus showing legend or not is not that important.
+    
 4.  What does the `se` argument to `geom_smooth()` do?
 
 
@@ -216,6 +223,9 @@ output: html_document
     ```{r}
 
     ```
+    
+    `se` argument adds standard error bands to the lines.
+    
 
 5.  Will these two graphs look different? Why/why not?
 
@@ -234,6 +244,8 @@ output: html_document
     ```{r}
 
     ```
+    
+    No difference. The two pieces of code are only two expressions of the same meaning on the same dataset.
 
 6.  Recreate the R code necessary to generate the following graphs.
     
@@ -243,6 +255,11 @@ output: html_document
     Answer: 
     
     ```{r, echo=TRUE, eval=TRUE}
+    
+    ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+      geom_point( mapping = aes(color = drv)) +
+      geom_smooth( mapping = aes(linetype = drv), se = FALSE)
+      
 
     ```
 
@@ -252,7 +269,9 @@ output: html_document
     Answer: 
     
     ```{r, echo=TRUE, eval=TRUE}
-
+    ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+      geom_point(mapping = aes(color = drv, alpha = year)) +
+      geom_smooth(se = FALSE)
     ```
 
     
@@ -263,7 +282,10 @@ output: html_document
     Answer: 
     
     ```{r, echo=TRUE, eval=TRUE}
-
+    ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+      geom_point(size = 4, color = "white") +
+      geom_point(mapping = aes(color = drv)) +
+      annotate("text", x = 3, y = 45, label = "Max hwy = 44")
     ```
 
 # Exercise 4
@@ -275,8 +297,11 @@ output: html_document
     Answer: 
 
     ```{r}
-
+    ggplot(data = diamonds) +
+      geom_pointrange(mapping = aes(x = cut, y = depth), stat = "summary")
     ```
+    
+    The default geom for stat_summary is `geom_pointrange()`.
 
 2.  What does `geom_col()` do? How is it different to `geom_bar()`?
 
@@ -285,6 +310,8 @@ output: html_document
     ```{r}
 
     ```
+    Use `geom_col()` when you want the heights of the bars to represent values in the data. And `geom_bar` uses `stat_count` by default and counts the number of cases at each x position. `geom_col' uses `stat_identity` and leaves the data as is.
+    
 
 3.  What variables does `stat_smooth()` compute? What parameters control
     its behaviour?
@@ -294,6 +321,14 @@ output: html_document
     ```{r}
 
     ```
+    Computed variables:
+    
+    * y: predicetd value
+    * ymin: lower pointwise confidence interval around the mean
+    * ymax: upper pointwise confidence interval around the mean
+    * se: standard error
+    
+    `method` can control its behavior, for example, different methods including lm, glm, gam, loess.
 
 # Exercise 5
 
@@ -303,11 +338,14 @@ output: html_document
     ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) + 
       geom_point()
     ```
+    
+    Overplotting. For each `cty` and `hwy` there could be multiple values. I will use `jitter` position adjustment.
 
     Answer: 
 
     ```{r}
-
+    ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) + 
+      geom_point(position = "jitter")
     ```
 
 2.  What parameters to `geom_jitter()` control the amount of jittering?
@@ -315,16 +353,31 @@ output: html_document
     Answer: 
 
     ```{r}
-
+    ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
+     geom_point(position = position_jitter(width = 0.4))
+    
+    ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
+     geom_point(position = position_jitter(height = 0.4))
     ```
+    
+    * `width` and `height`: amount of vertical and horizontal jitter. Defaults to 40% which means the jitter value will occupy 80% of the implied bins.
 
 3.  Compare and contrast `geom_jitter()` with `geom_count()`.
 
     Answer: 
 
     ```{r}
-
+    ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
+        geom_jitter()
+           
+    ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
+        geom_count()
     ```
+    
+    * `geom_jitter()` adds random noises to the original data points, which reduces the effect of overplotting.
+    
+    * `geom_count()` resizes the point according to the number of observations at each location. Points with more observations will be larger than those with fewer observations.
+    
 
 # Exercise 6
 
@@ -333,16 +386,33 @@ output: html_document
     Answer: 
 
     ```{r}
-
+    bar <- ggplot(data = diamonds) + 
+      geom_bar(
+        mapping = aes(x = factor(1), fill = cut), 
+        width = 1
+      )
+    
+    bar
+    
+    bar + coord_polar(theta = "y")
     ```
 
 2.  What does `labs()` do? Read the documentation.
 
+
     Answer: 
 
     ```{r}
-
+    bar <- ggplot(data = diamonds) + 
+      geom_bar(
+        mapping = aes(x = factor(1), fill = cut), 
+        width = 1
+      )
+    
+    bar + coord_polar(theta = "y") + labs(x = "factor(1)", y = "diamond counts", title = "pie chart for diamonds cut")
     ```
+    
+    The `labs()` can add text for axis, plot title or caption below the plot.
 
 3.  What does the plot below tell you about the relationship between city
     and highway mpg? Why is `coord_fixed()` important? What does 
@@ -360,3 +430,8 @@ output: html_document
     ```{r}
 
     ```
+    * The plot tells us `hwy` and `cty` has a positive linear relationship that hwy increases about two times in amount as cty increases.
+    
+    * `coord_fixed` forces a fixed scale that ensures one unit on the x-axis is the same length as one unit on the y-axis. In this case, `coord_fixed` ensures the line produced by 'geom_abline' is at a 45 degree angle.
+    
+    * `geom_abline` draws a line defined by slope and y-axis intercept. In this case, it draws a line at a 45 degree angle for users' better preception.
